@@ -30,11 +30,11 @@ def _load_args(args_path):
     return args_dict
 
 
-def tokenize(text):
+def tokenize(text,prob=True):
     global TOKENIZER
     if not TOKENIZER:
         TOKENIZER = LM_CUT()
-    return TOKENIZER.tokenize(text)
+    return TOKENIZER.tokenize(text,prob_out=prob)
 
 
 # remove white space before tokenize the text
@@ -93,7 +93,7 @@ class LM_CUT:
         yield input_tensor[0]
 
     # for tokenize only Thai characters
-    def tokenize(self, text,pred_out=False):
+    def tokenize(self, text,prob_out=False):
         if not text:
             return [""]
 
@@ -133,6 +133,6 @@ class LM_CUT:
                     pred_seq[i] = " " + pred_seq[i]
             out_put_line = "".join(pred_seq).split()
             out_put = out_put + out_put_line
-            if pred_out:
+            if prob_out:
                 out_put = [(i,j) for i,j in zip(pred_seq,tag_score.tolist()[0])]
         return out_put
