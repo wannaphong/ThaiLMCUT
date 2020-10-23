@@ -39,9 +39,9 @@ def tokenize(text,prob=True):
 
 # remove white space before tokenize the text
 def _remove_white_space(text):
-    text = text.replace(" ", "")
-    text = text.replace("\t", "")
-    text = text.replace("\n", "")
+    #text = text.replace(" ", "")
+    #text = text.replace("\t", "")
+    #text = text.replace("\n", "")
     return text
 
 
