@@ -23,6 +23,14 @@ stoi = stoi
 itos = itos
 TOKENIZER = None
 
+def load_model(name="Tokenizer_2019-11-11_04.24.19"):
+    global WEIGHTS_PATH,WEIGHT_FILE_NAME,PARAMS,TOKENIZER
+    if name!=WEIGHT_FILE_NAME:
+        TOKENIZER = None
+    WEIGHT_FILE_NAME = name
+    WEIGHTS_PATH = os.path.join(WEIGHTS_DIR, WEIGHT_FILE_NAME+".pth.tar")
+    PARAMS = os.path.join(WEIGHTS_DIR, WEIGHT_FILE_NAME+".json")
+
 
 def _load_args(args_path):
     with open(args_path) as f:
@@ -30,8 +38,9 @@ def _load_args(args_path):
     return args_dict
 
 
-def tokenize(text,prob=True):
-    global TOKENIZER
+def tokenize(text,prob=True,model="Tokenizer_2019-11-11_04.24.19"):
+    global TOKENIZER,WEIGHTS_PATH,WEIGHT_FILE_NAME
+    load_model(model)
     if not TOKENIZER:
         TOKENIZER = LM_CUT()
     return TOKENIZER.tokenize(text,prob_out=prob)
