@@ -1,7 +1,7 @@
 # credit: the code below is modified from https://github.com/m-hahn/tabula-rasa-rnns
 
 # sample command
-#python Tokenizer.py --epoch 5 --lstm_num_direction 2 --batchSize 30 --sequence_length 80 --char_embedding_size 100 --hidden_dim 60 --layer_num 2 --optim adam --learning_rate 0.0001
+# python Tokenizer.py --epoch 5 --lstm_num_direction 2 --batchSize 30 --sequence_length 80 --char_embedding_size 100 --hidden_dim 60 --layer_num 2 --optim adam --learning_rate 0.0001
 
 import argparse
 import math
@@ -13,6 +13,7 @@ from datetime import timedelta
 
 import torch
 from torch.autograd import Variable
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 from data_util import *
 from get_corpus import *
@@ -132,7 +133,7 @@ class Model:
     """
 
     def __init__(self, bi_lstm):
-
+        print(itos)
         if cuda:
             if bi_lstm:
                 self.rnn = torch.nn.LSTM(args.char_embedding_size, args.hidden_dim, args.layer_num,
@@ -174,9 +175,10 @@ class Model:
 
         # load the model
         if args.load_from is not None:
-            checkpoint = torch.load(imported_model + ".pth.tar")
+            checkpoint = torch.load(imported_model + ".pth.tar", map_location=device)
             for name, module in self.named_modules.items():
-                module.load_state_dict(checkpoint[name])
+                #print(checkpoint[name])
+                module.load_state_dict(checkpoint[name])#, strict=True)
 
         # after loading parameters from the language model, set the dictionary to save all parameters
         self.named_modules = {"rnn": self.rnn, "char_embeddings": self.char_embeddings, "optim": self.optim,
@@ -208,8 +210,8 @@ class Model:
 
         logits = self.output_classifier(out)
         log_probs = logsoftmax(logits)
-        loss = classifier_loss(logits.view(-1, 2), target_tensor.view(-1))
-        return loss, target_tensor.view(-1).size()[0], log_probs, input_tensor, target_tensor
+        loss = classifier_loss(logits.reshape(-1, 2), target_tensor.reshape(-1))
+        return loss, target_tensor.reshape(-1).size()[0], log_probs, input_tensor, target_tensor
 
     def backward(self, loss):
         self.optim.zero_grad()
@@ -435,7 +437,7 @@ def test():
     precision = 0
 
     model.rnn.train(False)
-    print("testing......")
+    '''print("testing......")
 
     test_data_CL = load_data_tokenizer(test_path,
                                         len_chunk=args.len_lines_per_chunk,
@@ -501,7 +503,7 @@ def test():
             print("".join(chars))
             print("".join(pred_seq))
 
-    print("train losses ", trainLosses)
+    #print("train losses ", trainLosses)
     print("dev losses ", devLosses)
 
     print()
@@ -600,7 +602,7 @@ def test():
         long, short = util.get_command(str(args))
         p = "python Tokenizer.py "
         long = p + long
-        print(long, file=table, end='\n')
+        print(long, file=table, end='\n')'''
 
 
 end = timer()
