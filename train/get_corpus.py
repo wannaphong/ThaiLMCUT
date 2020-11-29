@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import random
 import os
 
@@ -21,7 +22,10 @@ def get_path_data_LM(dataset="default"):
         train_path = os.path.join(DATA, "TEST_100K.txt")
         dev_path = os.path.join(DATA, "TEST_100K.txt")
         test_path = os.path.join(DATA, "TEST_100K.txt")
-
+    elif dataset == "lst20":
+        train_path = os.path.join(DATA, "lst20_train.txt")
+        dev_path = os.path.join(DATA, "LST20_eval.txt")
+        test_path = os.path.join(DATA, "lst20_test.txt")
     else:
         raise AssertionError("the given dataset name is wrong :",dataset )
     return train_path, dev_path, test_path
@@ -33,7 +37,10 @@ def get_path_data_tokenizer(dataset="default"):
         train_path = os.path.join(DATA, "news_00001.txt")
         dev_path = os.path.join(DATA, "news_00001.txt")
         test_path = os.path.join(DATA, "news_00001.txt")
-
+    elif dataset == "lst20":
+        train_path = os.path.join(DATA, "lst20_train.txt")
+        dev_path = os.path.join(DATA, "LST20_eval.txt")
+        test_path = os.path.join(DATA, "lst20_test.txt")
     else:
         raise AssertionError("the given dataset name is wrong :",dataset )
     return train_path, dev_path, test_path
