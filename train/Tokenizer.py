@@ -324,6 +324,8 @@ def save_log(mode="w"):
 num_epoch = 1
 best_model = None
 min_loss = 100000.00
+early = 0
+max_early =20
 if start_training:
     print("\n start training...")
     model = Model(bi_lstm)
@@ -416,7 +418,13 @@ if start_training:
         # if resume the training, append log data only for the last iteration
         elif str(args.load_from)[:2] == "To" and epoch >= args.epoch - 1:
             save_log("a")
-        if len(devLosses) > 1 and devLosses[-1] >= devLosses[-2]:
+        if len(devLosses) > 1 and devLosses[-1] >= min_loss:
+            print("early stopping"+str(early +1))
+            early += 1
+            save_log("a")
+        else:
+            early=0
+        if early==max_early:
             print("early stopping")
             save_log("a")
             break
