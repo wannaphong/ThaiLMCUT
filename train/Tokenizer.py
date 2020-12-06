@@ -10,6 +10,7 @@ import os
 import time
 from timeit import default_timer as timer
 from datetime import timedelta
+import copy
 
 import torch
 from torch.autograd import Variable
@@ -67,6 +68,7 @@ parser.add_argument("--printPrediction", type=int, default=0)
 args = parser.parse_args()
 args_dict = vars(args)
 save_path = os.path.join(CHECKPOINTS_TOKENIZER, args.save_to + ".pth.tar")
+best_save_path = os.path.join(CHECKPOINTS_TOKENIZER, args.save_to + "_best.pth.tar")
 log_path = os.path.join(CHECKPOINTS_TOKENIZER, args.save_to)
 
 start_training = True
@@ -320,6 +322,7 @@ def save_log(mode="w"):
 
 # train the tokenizer
 num_epoch = 1
+best_model = None
 if start_training:
     print("\n start training...")
     model = Model(bi_lstm)
@@ -399,6 +402,11 @@ if start_training:
         devLosses.append(dev_loss / dev_char_count)
         print("dev losses ", devLosses)
         num_epoch = epoch
+        if  len(devLosses) > 1 and devLosses[-1] > devLosses[-2]:
+            best_model = copy.copy(model)
+            print("It's best model" + str(best_save_path))
+            torch.save(dict([(name, module.state_dict()) for name, module in best_model.named_modules.items()]),
+                       best_save_path)
 
         if args.load_from is None or str(args.load_from)[:2] == "LM":
             save_log("w")
