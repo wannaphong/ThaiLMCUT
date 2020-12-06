@@ -323,6 +323,7 @@ def save_log(mode="w"):
 # train the tokenizer
 num_epoch = 1
 best_model = None
+min_loss = 100000.00
 if start_training:
     print("\n start training...")
     model = Model(bi_lstm)
@@ -402,9 +403,10 @@ if start_training:
         devLosses.append(dev_loss / dev_char_count)
         print("dev losses ", devLosses)
         num_epoch = epoch
-        if  len(devLosses) > 1 and devLosses[-1] < devLosses[-2]:
+        if  len(devLosses) > 1 and devLosses[-1] < min_loss:
             best_model = copy.copy(model)
             print("It's best model" + str(best_save_path))
+            min_loss = devLosses[-1]
             torch.save(dict([(name, module.state_dict()) for name, module in best_model.named_modules.items()]),
                        best_save_path)
 
