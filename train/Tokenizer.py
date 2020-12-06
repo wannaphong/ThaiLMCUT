@@ -402,7 +402,7 @@ if start_training:
         devLosses.append(dev_loss / dev_char_count)
         print("dev losses ", devLosses)
         num_epoch = epoch
-        if  len(devLosses) > 1 and devLosses[-1] > devLosses[-2]:
+        if  len(devLosses) > 1 and devLosses[-1] < devLosses[-2]:
             best_model = copy.copy(model)
             print("It's best model" + str(best_save_path))
             torch.save(dict([(name, module.state_dict()) for name, module in best_model.named_modules.items()]),
