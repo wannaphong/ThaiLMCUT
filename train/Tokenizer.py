@@ -418,7 +418,7 @@ if start_training:
         # if resume the training, append log data only for the last iteration
         elif str(args.load_from)[:2] == "To" and epoch >= args.epoch - 1:
             save_log("a")
-        if len(devLosses) > 1 and devLosses[-1] >= min_loss:
+        if len(devLosses) > 1 and devLosses[-1] > min_loss:
             print("early stopping"+str(early +1))
             early += 1
             save_log("a")
