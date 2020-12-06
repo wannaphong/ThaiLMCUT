@@ -27,7 +27,9 @@ def get_path_data_LM(dataset="default"):
         dev_path = os.path.join(DATA, "LST20_eval.txt")
         test_path = os.path.join(DATA, "lst20_test.txt")
     else:
-        raise AssertionError("the given dataset name is wrong :",dataset )
+        train_path = os.path.join(DATA, str(dataset)+".train")
+        dev_path = os.path.join(DATA, str(dataset)+".val")
+        test_path = ""
     return train_path, dev_path, test_path
 
 
@@ -42,7 +44,9 @@ def get_path_data_tokenizer(dataset="default"):
         dev_path = os.path.join(DATA, "LST20_eval.txt")
         test_path = os.path.join(DATA, "lst20_test.txt")
     else:
-        raise AssertionError("the given dataset name is wrong :",dataset )
+        train_path = os.path.join(DATA, str(dataset)+".train")
+        dev_path = os.path.join(DATA, str(dataset)+".val")
+        test_path = ""
     return train_path, dev_path, test_path
 
 
