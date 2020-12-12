@@ -7,6 +7,7 @@ import argparse
 import math
 import random
 import os
+import copy
 import time
 from timeit import default_timer as timer
 from datetime import timedelta
@@ -101,6 +102,7 @@ print("GPU: ", torch.cuda.is_available())
 
 save_path = os.path.join(CHECKPOINTS_LM, args.save_to + ".pth.tar")
 log_path = os.path.join(CHECKPOINTS_LM, args.save_to)
+best_save_path = os.path.join(CHECKPOINTS_LM, args.save_to +  "_best.pth.tar")
 util.export_args(args_dict, log_path)
 
 
@@ -251,7 +253,11 @@ def save_csv(f="LM_log.csv"):
 
 
 # model training
+best_model = None
 num_epoch = 1
+early = 0
+min_loss = 10000000
+max_early = 20 #max
 if train:
     model = Model(bi_lstm)
     train_path, dev_path, test_path = get_path_data_LM(dataset)
@@ -324,16 +330,27 @@ if train:
 
         devLosses.append(dev_loss / dev_char_count)
         print("dev losses ", devLosses)
+        if  len(devLosses) > 1 and devLosses[-1] < min_loss:
+            best_model = copy.copy(model)
+            print("It's best model" + str(best_save_path))
+            min_loss = devLosses[-1]
+            torch.save(dict([(name, module.state_dict()) for name, module in model.named_modules.items()]),
+                       best_save_path)
 
         # if resume the training, append log data only for the last iteration
         if args.load_from is None:
             save_log("w")
         elif args.load_from is not None and epoch >= args.epoch - 1:
             save_log("a")
-        if len(devLosses) > 1 and devLosses[-1] >= devLosses[-2]:
-            print("early stopping applied")
-            with open(CHECKPOINTS_LM + args.save_to, "a") as outFile:
-                print("early stopping applied", file=outFile)
+        if len(devLosses) > 1 and devLosses[-1] > min_loss:
+            print("early stopping"+str(early +1))
+            early += 1
+            save_log("a")
+        else:
+            early = 0
+        if early==max_early:
+            print("early stopping")
+            save_log("a")
             break
 
         end = timer()
