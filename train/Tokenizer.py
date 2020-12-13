@@ -88,7 +88,7 @@ if args.load_from is not None:
 
     # get the network structure from the loaded model
     if True:
-        imported_model = os.path.join(CHECKPOINTS_TOKENIZER, args.load_from)
+        imported_model = os.path.join(CHECKPOINTS, args.load_from)
         args_dict = util.load_args(imported_model)
         args.char_embedding_size = args_dict["char_embedding_size"]
         args.hidden_dim = args_dict["hidden_dim"]
@@ -402,7 +402,13 @@ if start_training:
             if epoch == 0:
                 count_dev_samples += args.batchSize
 
-        devLosses.append(dev_loss / dev_char_count)
+        try:
+            print("dev_loss : "+str(dev_loss))
+            print("dev_char_count : "+str(dev_char_count))
+            devLosses.append(dev_loss / dev_char_count)
+        except ZeroDivisionError:
+            print("skip : ZeroDivisionError")
+            continue
         print("dev losses ", devLosses)
         num_epoch = epoch
         if  len(devLosses) > 1 and devLosses[-1] < min_loss:
